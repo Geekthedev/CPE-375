@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer Architecture & Operating Systems Solutions</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- EB Garamond Font -->
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'EB Garamond', serif;
+        }
+        /* Custom styles for preformatted text (ASCII diagrams) */
+        pre {
+            background-color: #f3f4f6; /* gray-100 */
+            padding: 1rem;
+            border-radius: 0.5rem; /* rounded-lg */
+            overflow-x: auto;
+            white-space: pre-wrap; /* Ensures wrapping for long lines if needed */
+            word-wrap: break-word; /* Breaks long words */
+            font-size: 0.875rem; /* text-sm */
+            line-height: 1.5;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+        }
+        th, td {
+            border: 1px solid #e5e7eb; /* gray-200 */
+            padding: 0.75rem;
+            text-align: left;
+        }
+        th {
+            background-color: #f9fafb; /* gray-50 */
+            font-weight: 600;
+        }
+        /* Styling for blockquotes/notes */
+        blockquote {
+            border-left: 4px solid #3b82f6; /* blue-500 */
+            background-color: #eff6ff; /* blue-50 */
+            padding: 0.75rem 1rem;
+            margin-left: 0;
+            border-radius: 0.375rem; /* rounded-md */
+            color: #1e40af; /* blue-800 */
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 p-4 sm:p-8">
+    <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-lg p-6 sm:p-10">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-blue-700 mb-4 rounded-md p-2">
+                Computer Architecture & Operating Systems Solutions
+            </h1>
+            <h3 class="text-xl sm:text-2xl text-gray-700 font-semibold mb-2">
+                Written by: Joseph Godsown Anointed
+            </h3>
+            <h4 class="text-lg sm:text-xl text-gray-600 mb-4">
+                Computer Engineering 300L, University of Benin, Edo State, Nigeria
+            </h4>
+            <hr class="border-t-2 border-blue-200 my-6">
+        </header>
+
+        <section class="mb-12">
+            <h2 class="text-3xl sm:text-4xl font-bold text-blue-600 mb-6 pb-2 border-b border-blue-300">
+                Section A: Computer Architecture
+            </h2>
+
+            <article class="mb-8 p-4 bg-gray-50 rounded-lg shadow-sm">
+                <h3 class="text-2xl sm:text-3xl font-semibold text-gray-800 mb-4">
+                    Question 1: Data-path and Control Unit for "add" instruction
+                </h3>
+                <p class="mb-4 text-lg">
+                    Question: With appropriate diagram, show the data-path and control unit or control lines of a single processor and outline the steps on how the "add" instruction can be executed in one clock cycle using PC = PC + 4.
+                </p>
+
+                <h4 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-3">Solution:</h4>
+                <p class="mb-4">
+                    A single-cycle processor executes every instruction in one clock cycle. The data-path includes components like the Program Counter (PC), Instruction Memory, Register File, ALU (Arithmetic Logic Unit), Data Memory, and various multiplexers and control lines. The control unit generates signals to orchestrate these components.
+                </p>
+
+                <h5 class="text-lg sm:text-xl font-medium text-gray-700 mb-2">Conceptual Data Path Diagram:</h5>
+                <pre class="bg-gray-100 p-4 rounded-lg text-sm mb-4">
++---------------------+
+|                     |
+|     Instruction     |
+|       Memory        |
+|    (reads PC)       |
++----------+----------+
+           | Instruction (32-bit)
+           V
++----------+----------+        +-----------------+
+|   Control Unit      |------->| ALU Control     |
+| (decodes instruction)|        | (generates ALU  |
+| (generates control  |        |  OpCode)        |
+|  signals)           |        +-----------------+
++----------+----------+              ^
+           |                           | Control Signals
+           | Control Signals           |
+           V                           |
++---------------------+      +---------------------+
+|  PC (Program Counter)|      |  Register File      |
+|  (address of next   |<------|  (reads R1, R2;    |
+|   instruction)      |      |   writes R3)        |
++----------+----------+      +----------+----------+
+           | (address)                   | Read Data 1 (R1)
+           V                             | Read Data 2 (R2)
++---------------------+                  V
+|   Adder (PC+4)      |           +-----------------+
++---------------------+           |   ALU           |
+|                        |   (performs     |
+|                        |    operation)   |
++-----------------+
+        | ALU Result
+        V
++-----------------+
+|  Data Memory    |
+|  (Load/Store)   |
++-----------------+
+        ^
+        | Data for Write
+        | Data from Read
+        V
+                       (to Register File for Write-Back)
+                </pre>
+
+                <h5 class="text-lg sm:text-xl font-medium text-gray-700 mb-2">Execution Steps for `add R1, R2, R3` (R1 = R2 + R3):</h5>
+                <ol class="list-decimal list-inside ml-4 text-base mb-4 space-y-2">
+                    <li>Instruction Fetch (IF):
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>The address in the PC is sent to the Instruction Memory.</li>
+                            <li>The `add R1, R2, R3` instruction is fetched and placed in the Instruction Register.</li>
+                            <li>The PC is updated to `PC + 4` to point to the next sequential instruction.</li>
+                        </ul>
+                    </li>
+                    <li>Instruction Decode and Register Fetch (ID):
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>The Control Unit decodes the fetched instruction and asserts the necessary control signals (e.g., `RegDst` to select R1 as destination, `ALUOp` for addition).</li>
+                            <li>The register numbers for `R2` and `R3` (source operands) are sent to the Register File.</li>
+                            <li>The values of `R2` and `R3` are read from the Register File.</li>
+                        </ul>
+                    </li>
+                    <li>Execute (EX):
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>The values of `R2` and `R3` are sent to the ALU.</li>
+                            <li>The ALU Control Unit (guided by the `ALUOp` and function code) configures the ALU to perform the addition (`R2 + R3`).</li>
+                            <li>The ALU computes the result.</li>
+                        </ul>
+                    </li>
+                    <li>Memory Access (MEM):
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>For an `add` instruction, this stage is bypassed as no memory access is required.</li>
+                        </ul>
+                    </li>
+                    <li>Write Back (WB):
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>The result from the ALU is written back to the Register File, into the destination register `R1`. The `RegWrite` control signal is asserted.</li>
+                        </ul>
+                    </li>
+                </ol>
+            </article>
+
+            <article class="mb-8 p-4 bg-gray-50 rounded-lg shadow-sm">
+                <h3 class="text-2xl sm:text-3xl font-semibold text-gray-800 mb-4">
+                    Question 2: Execution of "lw" and "beq" Instructions
+                </h3>
+                <p class="mb-4 text-lg">
+                    Question: Outline the steps on how the following instructions will be executed, load word (lw) and branch-on-equal (beq) using PC = PC + 4.
+                </p>
+
+                <h4 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-3">Solution:</h4>
+
+                <h5 class="text-lg sm:text-xl font-medium text-gray-700 mb-2">A. Load Word (`lw R1, offset(R2)`)</h5>
+                <p class="mb-2">This instruction loads a word from memory into register `R1`. The memory address is calculated by adding the `offset` to the value in `R2`.</p>
+                <ol class="list-decimal list-inside ml-4 text-base mb-4 space-y-2">
+                    <li>Instruction Fetch (IF):
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>PC sends the instruction address to Instruction Memory.</li>
+                            <li>The `lw R1, offset(R2)` instruction is fetched.</li>
+                            <li>PC is updated to `PC + 4`.</li>
+                        </ul>
+                    </li>
+                    <li>Instruction Decode and Register Fetch (ID):
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>The Control Unit decodes the instruction, asserting signals like `MemRead`, `MemtoReg`, `RegWrite`, and `ALUSrc` (to select the immediate value).</li>
+                            <li>The value of `R2` (base register) is read from the Register File.</li>
+                            <li>The `offset` (immediate value) is sign-extended.</li>
+                        </ul>
+                    </li>
+                    <li>Execute (EX):
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>The ALU receives the value of `R2` and the sign-extended `offset`.</li>
+                            <li>The ALU performs addition (`R2 + offset`) to calculate the effective memory address.</li>
+                        </ul>
+                    </li>
+                    <li>Memory Access (MEM):
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>The calculated effective memory address is sent to the Data Memory.</li>
+                            <li>The `MemRead` control signal is asserted, and the data at that address is read from Data Memory.</li>
+                        </ul>
+                    </li>
+                    <li>Write Back (WB):
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>The data read from Data Memory is written back to the Register File, into the destination register `R1`. `RegWrite` is asserted, and `MemtoReg` ensures the data comes from memory.</li>
+                        </ul>
+                    </li>
+                </ol>
+
+                <h5 class="text-lg sm:text-xl font-medium text-gray-700 mb-2">B. Branch-on-Equal (`beq R1, R2, Label`)</h5>
+                <p class="mb-2">This instruction compares `R1` and `R2`. If they are equal, the PC is updated to the `Label` address; otherwise, execution continues sequentially.</p>
+                <ol class="list-decimal list-inside ml-4 text-base mb-4 space-y-2">
+                    <li>Instruction Fetch (IF):
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>PC sends the instruction address to Instruction Memory.</li>
+                            <li>The `beq R1, R2, Label` instruction is fetched.</li>
+                            <li>PC is updated to `PC + 4`.</li>
+                        </ul>
+                    </li>
+                    <li>Instruction Decode and Register Fetch (ID):
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>The Control Unit decodes the instruction, asserting the `Branch` signal and configuring `ALUOp` for subtraction.</li>
+                            <li>The values of `R1` and `R2` (operands to be compared) are read from the Register File.</li>
+                            <li>The `Label` (branch offset) is sign-extended and then shifted left by 2 (for word alignment).</li>
+                        </ul>
+                    </li>
+                    <li>Execute (EX):
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>`R1` and `R2` are sent to the ALU.</li>
+                            <li>The ALU performs subtraction (`R1 - R2`).</li>
+                            <li>The ALU's `Zero` flag is checked: if `R1 - R2 = 0`, the `Zero` flag is asserted.</li>
+                            <li>Concurrently, the potential branch target address is calculated: `(PC + 4) + (sign-extended and shifted offset)`.</li>
+                        </ul>
+                    </li>
+                    <li>Memory Access (MEM):
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>This stage is bypassed for `beq`.</li>
+                        </ul>
+                    </li>
+                    <li>Write Back (WB):
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>This stage is bypassed for `beq` (no register write-back).</li>
+                        </ul>
+                    </li>
+                </ol>
+                <p class="mb-4 text-base">
+                    Branch Decision:
+                    <ul class="list-disc list-inside ml-4 space-y-1">
+                        <li>If the `Zero` flag from the ALU is asserted (meaning `R1 == R2`) AND the `Branch` control signal is asserted, the calculated branch target address is loaded into the PC.</li>
+                        <li>Otherwise, the PC retains `PC + 4`, and execution continues with the next sequential instruction.</li>
+                    </ul>
+                </p>
+            </article>
+
+            <article class="mb-8 p-4 bg-gray-50 rounded-lg shadow-sm">
+                <h3 class="text-2xl sm:text-3xl font-semibold text-gray-800 mb-4">
+                    Question 3: Single-cycle design, Pipelining, and Overflow Exception
+                </h3>
+                <p class="mb-4 text-lg">
+                    Question: (a) Why is a single-cycle design not used in modern design of a processor? (b) With appropriate sketches and illustrations, explain the term pipelining. (c) What happens in a pipeline if an overflow exception occurs in the "add" instruction?
+                </p>
+
+                <h4 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-3">(a) Why is a single-cycle design not used in modern design of a processor?</h4>
+                <p class="mb-4">
+                    A single-cycle design is impractical for modern processors due to several key limitations:
+                </p>
+                <ol class="list-decimal list-inside ml-4 text-base mb-4 space-y-2">
+                    <li>Long Clock Cycle Time: The clock cycle must be long enough to accommodate the longest instruction's execution path (e.g., a load word instruction that goes through all stages: fetch, decode, execute, memory access, write back). This means faster instructions waste time waiting for the full cycle to complete, leading to inefficient overall performance.</li>
+                    <li>Inefficient Hardware Utilization: Most functional units (like the ALU or Data Memory) are idle for a significant portion of the clock cycle, as they are only used during specific instruction stages. This leads to poor hardware resource utilization.</li>
+                    <li>Scalability Issues: As instruction sets become more complex or the number of components increases, the critical path (longest execution path) lengthens further, making it impossible to achieve high clock frequencies.</li>
+                    <li>Increased Hardware Cost/Complexity (for a given speed target): To achieve a competitive clock rate, the entire circuit would need to be optimized for speed, potentially requiring more complex and power-hungry transistors or designs.</li>
+                </ol>
+
+                <h4 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-3">(b) With appropriate sketches and illustrations, explain the term pipelining.</h4>
+                <p class="mb-4">
+                    Pipelining is a technique that improves processor throughput by allowing multiple instructions to be in different stages of execution simultaneously. It breaks down instruction processing into sequential stages, much like an "assembly line."
+                </p>
+                <h5 class="text-lg sm:text-xl font-medium text-gray-700 mb-2">Analogy: Car Wash Pipeline</h5>
+                <p class="mb-2">Imagine a car wash with four stages:</p>
+                <ul class="list-disc list-inside ml-4 text-base mb-2">
+                    <li>Stage 1: Washing</li>
+                    <li>Stage 2: Rinsing</li>
+                    <li>Stage 3: Drying</li>
+                    <li>Stage 4: Polishing</li>
+                </ul>
+                <p class="mb-2">Non-Pipelined: Car A goes through Wash -> Rinse -> Dry -> Polish. Only when Car A is fully polished does Car B start washing.</p>
+                <p class="mb-4">Pipelined:</p>
+                <ul class="list-disc list-inside ml-4 text-base mb-2">
+                    <li>Cycle 1: Car A in Wash.</li>
+                    <li>Cycle 2: Car A in Rinse, Car B in Wash.</li>
+                    <li>Cycle 3: Car A in Dry, Car B in Rinse, Car C in Wash.</li>
+                    <li>Cycle 4: Car A in Polish, Car B in Dry, Car C in Rinse, Car D in Wash.</li>
+                    <li>Cycle 5: Car A exits. Car B in Polish, Car C in Dry, Car D in Rinse, Car E in Wash.</li>
+                </ul>
+                <p class="mb-4">
+                    Once the pipeline is full (from Cycle 4 onwards), one car exits every cycle, significantly increasing throughput.
+                </p>
+                <h5 class="text-lg sm:text-xl font-medium text-gray-700 mb-2">Processor Pipelining Stages (Conceptual Example for MIPS):</h5>
+                <p class="mb-2">A typical 5-stage pipeline for a processor:</p>
+                <ol class="list-decimal list-inside ml-4 text-base mb-2">
+                    <li>IF (Instruction Fetch): Fetch the instruction from instruction memory.</li>
+                    <li>ID (Instruction Decode/Register Fetch): Decode the instruction, read register operands.</li>
+                    <li>EX (Execute): Perform ALU operation or calculate memory addresses.</li>
+                    <li>MEM (Memory Access): Access data memory for loads or stores.</li>
+                    <li>WB (Write Back): Write the result back to the register file.</li>
+                </ol>
+                <h5 class="text-lg sm:text-xl font-medium text-gray-700 mb-2">Conceptual Pipeline Diagram:</h5>
+                <pre class="bg-gray-100 p-4 rounded-lg text-sm mb-4">
+Clock Cycle: 1     2     3     4     5     6     7     8
+Instruction 1: IF -> ID -> EX -> MEM -> WB
+Instruction 2:       IF -> ID -> EX -> MEM -> WB
+Instruction 3:             IF -> ID -> EX -> MEM -> WB
+Instruction 4:                   IF -> ID -> EX -> MEM -> WB
+                </pre>
+                <p class="mb-4">
+                    In this diagram, after cycle 4, a new instruction completes every clock cycle, demonstrating improved throughput compared to a single-cycle design where one instruction would take 5 cycles to complete.
+                </p>
+
+                <h4 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-3">(c) What happens in a pipeline if an overflow exception occurs in the "add" instruction?</h4>
+                <p class="mb-4">
+                    If an overflow exception occurs during an `add` instruction in a pipelined processor, the following sequence of events typically happens:
+                </p>
+                <ol class="list-decimal list-inside ml-4 text-base mb-4 space-y-2">
+                    <li>Detection: The overflow condition is detected in the EX (Execute) stage of the pipeline when the ALU performs the addition and detects the overflow.</li>
+                    <li>Precise Exception State Preservation: Modern processors aim for "precise exceptions," meaning that when an exception occurs, the architectural state (registers, memory) should appear as if all instructions before the faulting instruction completed successfully, and no instructions after it have modified the state.</li>
+                    <li>Pipeline Flush/Kill: To maintain precision, all instructions currently in the pipeline that are after the `add` instruction (i.e., in IF, ID, and potentially later stages if out-of-order execution is used) must be flushed (discarded). Their partial results are not committed.</li>
+                    <li>Save Context: The Program Counter (PC) of the faulting instruction (the `add` instruction) and relevant status information are saved into special registers (e.g., an Exception Program Counter - EPC).</li>
+                    <li>Transfer Control to Exception Handler: The processor's PC is then loaded with the starting address of a dedicated exception handler routine (part of the operating system or firmware).</li>
+                    <li>Exception Handling: The exception handler takes over. It analyzes the cause of the exception (overflow in this case) and performs the necessary actions, which might include:
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>Terminating the program that caused the overflow.</li>
+                            <li>Sending a signal to the program (e.g., SIGFPE).</li>
+                            <li>Logging the error.</li>
+                            <li>In some rare cases, attempting a recovery.</li>
+                        </ul>
+                    </li>
+                    <li>Return (Optional): If the exception is recoverable (less common for arithmetic overflow in user code), the handler might restore the saved context and return control to the program, possibly to a different instruction or after corrective action.</li>
+                </ol>
+                <p class="mb-4">
+                    The key is flushing the pipeline to prevent incorrect results from speculative execution or instructions that would depend on the faulty operation from completing, thus ensuring a precise state for the exception handler.
+                </p>
+            </article>
+
+            <article class="mb-8 p-4 bg-gray-50 rounded-lg shadow-sm">
+                <h3 class="text-2xl sm:text-3xl font-semibold text-gray-800 mb-4">
+                    Question 4: Memory Hierarchy, Main Memory Technologies, Branch Prediction, and Register Renaming
+                </h3>
+                <p class="mb-4 text-lg">
+                    Question: (a) What is a memory hierarchy? (b) Explain the four primary technologies that uses main memory. (c) Explain the following terms with example (i) Branch prediction (ii) Register renaming.
+                </p>
+
+                <h4 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-3">(a) What is a memory hierarchy?</h4>
+                <p class="mb-4">
+                    A memory hierarchy is a multi-level structure of storage devices in a computer system, organized based on their speed, cost, and capacity. Its fundamental purpose is to provide the illusion of a very large, extremely fast, and relatively inexpensive memory to the CPU. This is achieved by leveraging the principle of locality of reference (programs tend to access data/instructions that have been recently used or are physically near recently used data/instructions).
+                </p>
+                <p class="mb-2">The levels, from fastest/smallest to slowest/largest, typically include:</p>
+                <ol class="list-decimal list-inside ml-4 text-base mb-4 space-y-1">
+                    <li>Registers: Smallest, fastest, directly within the CPU.</li>
+                    <li>Cache Memory (L1, L2, L3): Small, fast SRAM, on or very close to the CPU chip. L1 is fastest, L3 is largest.</li>
+                    <li>Main Memory (RAM): Larger, slower DRAM, external to the CPU, but still electronic.</li>
+                    <li>Secondary Storage (Disk/SSD): Much larger, much slower, non-volatile (e.g., Hard Disk Drives, Solid State Drives).</li>
+                    <li>Tertiary/Offline Storage (Tape/Cloud): Largest, slowest, cheapest, used for archival or backup.</li>
+                </ol>
+                <p class="mb-4">
+                    When the CPU needs data, it first checks the fastest level. If found (a "hit"), access is quick. If not found (a "miss"), data is fetched from the next lower (slower) level and brought into the higher level for potential future faster access.
+                </p>
+
+                <h4 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-3">(b) Explain the four primary technologies that use main memory.</h4>
+                <p class="mb-4">
+                    While "main memory" primarily refers to DRAM, the question could be interpreted more broadly to include technologies foundational to the memory subsystem or key memory types. Assuming it refers to different types of Random-Access Memory (RAM) and a non-volatile memory that serves a similar role in modern systems:
+                </p>
+                <ol class="list-decimal list-inside ml-4 text-base mb-4 space-y-2">
+                    <li>SRAM (Static Random-Access Memory):
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>Technology: Uses latches (flip-flops), typically 6 transistors per bit, to store data.</li>
+                            <li>Characteristics: Extremely fast, holds data as long as power is supplied without needing refresh cycles, but is very expensive and consumes more power (when active) than DRAM.</li>
+                            <li>Usage: Primarily used for CPU cache memory (L1, L2, L3) due to its speed.</li>
+                        </ul>
+                    </li>
+                    <li>DRAM (Dynamic Random-Access Memory):
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>Technology: Stores each bit as a charge in a capacitor, requiring only one transistor and one capacitor per bit.</li>
+                            <li>Characteristics: Slower than SRAM, less expensive, and denser (more bits per area) than SRAM. However, capacitors leak charge, so DRAM needs to be periodically refreshed (recharged) to retain data.</li>
+                            <li>Usage: The dominant technology for computer main memory (RAM) due to its high density and lower cost per bit.</li>
+                        </ul>
+                    </li>
+                    <li>SDRAM (Synchronous Dynamic Random-Access Memory):
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>Technology: An evolution of DRAM that operates synchronously with the system clock, unlike older asynchronous DRAM.</li>
+                            <li>Characteristics: This synchronization allows for pipelining of memory access requests and burst mode transfers, significantly increasing data throughput compared to asynchronous DRAM. Subsequent generations (DDR1, DDR2, DDR3, DDR4, DDR5 SDRAM) further improve speed and efficiency.</li>
+                            <li>Usage: All modern main memory modules (e.g., the sticks of RAM in your computer) are types of SDRAM.</li>
+                        </ul>
+                    </li>
+                    <li>Flash Memory (NAND and NOR Flash):
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>Technology: A non-volatile memory that stores data using floating-gate transistors, which retain their state even without power.</li>
+                            <li>Characteristics: Non-volatile, relatively fast for reads, but slower for writes and has a limited number of erase/write cycles.</li>
+                            <li>Usage: While not the traditional "main memory" directly addressed by the CPU, it plays a critical role in the memory hierarchy as the primary storage medium in Solid State Drives (SSDs), USB flash drives, and mobile device storage. SSDs have become so fast that they often bridge the performance gap between DRAM and traditional hard drives, and some newer memory technologies are blurring the lines between main memory and persistent storage.</li>
+                        </ul>
+                    </li>
+                </ol>
+
+                <h4 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-3">(c) Explain the following terms with example:</h4>
+
+                <h5 class="text-lg sm:text-xl font-medium text-gray-700 mb-2">(i) Branch Prediction:</h5>
+                <ul class="list-disc list-inside ml-4 text-base mb-4 space-y-2">
+                    <li>Definition: A technique used in modern pipelined processors to minimize performance penalties caused by conditional branch instructions. When a branch (like an `if` statement or a loop end) is encountered, the processor tries to guess whether the branch will be taken or not taken before the actual branch condition is evaluated.</li>
+                    <li>Mechanism: Processors use hardware components called branch predictors (e.g., using a Branch History Table - BHT) that record the past behavior of branches. Based on this history, a prediction is made. Instructions from the predicted path are then speculatively fetched and executed.</li>
+                    <li>Example: Consider a `for` loop that iterates 100 times. The branch at the end of the loop that jumps back to the beginning will be taken 99 times and not taken once (when the loop exits). A branch predictor will quickly learn to predict "taken" for this branch. On the 100th iteration, when the loop finally exits, the predictor will likely mispredict "taken," causing a pipeline flush. However, the gains from 99 correct predictions far outweigh the cost of one misprediction.</li>
+                </ul>
+
+                <h5 class="text-lg sm:text-xl font-medium text-gray-700 mb-2">(ii) Register Renaming:</h5>
+                <ul class="list-disc list-inside ml-4 text-base mb-4 space-y-2">
+                    <li>Definition: A technique employed in out-of-order execution processors to eliminate "false dependencies" (also known as name dependencies: Write-After-Read (WAR) and Write-After-Write (WAW) hazards) that arise when different instructions use the same architectural registers, but there's no true data flow between them.</li>
+                    <li>Mechanism: The hardware dynamically maps the limited set of architectural registers (visible to the programmer) to a larger pool of physical registers. When an instruction is fetched and prepares to write to an architectural register, a new, unique physical register is allocated for its result. Subsequent instructions that read from that same architectural register are then directed to read from this newly allocated physical register.</li>
+                    <li>Example:
+                        <pre class="bg-gray-100 p-2 rounded-md text-sm my-2">
+I1: ADD R3, R1, R2   // R3 = R1 + R2
+I2: SUB R5, R3, R4   // R5 = R3 - R4 (Reads R3)
+I3: MUL R3, R6, R7   // R3 = R6 * R7 (Writes R3, no true dependency on I1/I2's use of R3)
+                        </pre>
+                        Without renaming, I3 would have to wait for I2 to read R3 (WAR hazard) and would create a dependency with I1 for writing to R3 (WAW hazard). With renaming, I1 writes to physical register Px (mapped from R3), I2 reads from Px. I3 then writes to a new physical register Py (also mapped from R3). Now, I1 and I3 can execute concurrently because they are writing to different physical locations, removing the false dependencies and allowing greater parallelism.
+                    </li>
+                </ul>
+            </article>
+
+            <article class="mb-8 p-4 bg-gray-50 rounded-lg shadow-sm">
+                <h3 class="text-2xl sm:text-3xl font-semibold text-gray-800 mb-4">
+                    Question 5: Page Fault, Superscalar vs. Multicore, and Key Operating System/Architecture Terms
+                </h3>
+                <p class="mb-4 text-lg">
+                    Question: (a) What is a page fault? (b) What is the difference between a superscalar processor and a multicore processor? (c) Explain the following terms (i) Cache Memory (ii) Speculation (iii) Branch Target Buffer (iv) Out-Of-Order Execution (v) Virtual Memory.
+                </p>
+
+                <h4 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-3">(a) What is a page fault?</h4>
+                <p class="mb-4">
+                    A page fault is a type of interrupt that occurs when a program attempts to access a memory page that is part of its virtual address space but is currently not loaded into the main memory (RAM).
+                </p>
+                <h5 class="text-lg sm:text-xl font-medium text-gray-700 mb-2">Process:</h5>
+                <ol class="list-decimal list-inside ml-4 text-base mb-4 space-y-2">
+                    <li>A CPU generates a virtual address.</li>
+                    <li>The Memory Management Unit (MMU) attempts to translate this virtual address to a physical address using the page table.</li>
+                    <li>If the page table entry for that virtual page indicates that the page is not in physical memory (e.g., its "present" bit is clear), the MMU triggers a page fault.</li>
+                    <li>The operating system's page fault handler takes over.</li>
+                    <li>The OS finds the requested page on secondary storage (e.g., hard disk or SSD).</li>
+                    <li>It finds a free physical frame in RAM to load the page into. If no free frame exists, a page replacement algorithm (e.g., LRU, FIFO) is used to select a "victim" page to swap out to disk.</li>
+                    <li>The required page is loaded from disk into the chosen RAM frame.</li>
+                    <li>The page table is updated.</li>
+                    <li>The instruction that caused the page fault is restarted.</li>
+                </ol>
+                <p class="mb-4">
+                    Page faults are a normal and necessary mechanism for virtual memory, but frequent page faults can lead to "thrashing" and severe performance degradation due to slow disk I/O.
+                </p>
+
+                <h4 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-3">(b) What is the difference between a superscalar processor and a multicore processor?</h4>
+                <div class="overflow-x-auto mb-4">
+                    <table class="min-w-full bg-white rounded-lg shadow-md">
+                        <thead>
+                            <tr>
+                                <th class="py-3 px-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider rounded-tl-lg">Feature</th>
+                                <th class="py-3 px-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Superscalar Processor</th>
+                                <th class="py-3 px-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider rounded-tr-lg">Multicore Processor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="py-3 px-4 border-b border-gray-200">Concept</td>
+                                <td class="py-3 px-4 border-b border-gray-200">Single CPU core, executes multiple instructions in parallel</td>
+                                <td class="py-3 px-4 border-b border-gray-200">Multiple independent CPU cores on one chip</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 border-b border-gray-200">Parallelism Type</td>
+                                <td class="py-3 px-4 border-b border-gray-200">Primarily Instruction-Level Parallelism (ILP)</td>
+                                <td class="py-3 px-4 border-b border-gray-200">Primarily Thread-Level Parallelism (TLP) / Process-Level Parallelism</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 border-b border-gray-200">Mechanism</td>
+                                <td class="py-3 px-4 border-b border-gray-200">Uses multiple execution units (ALUs, FPUs), complex logic (out-of-order execution, branch prediction, register renaming) to find and exploit parallelism within a single instruction stream.</td>
+                                <td class="py-3 px-4 border-b border-gray-200">Each core is a complete, independent processing unit capable of running its own thread or process simultaneously.</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 border-b border-gray-200">Software Impact</td>
+                                <td class="py-3 px-4 border-b border-gray-200">Largely transparent to software (compilers can help optimize code for ILP, but the hardware handles dynamic parallelism).</td>
+                                <td class="py-3 px-4 border-b border-gray-200">Requires software to be explicitly multi-threaded or multi-processed to fully utilize the multiple cores.</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 rounded-bl-lg">Example</td>
+                                <td class="py-3 px-4">An Intel Core i7 single core (it's superscalar).</td>
+                                <td class="py-3 px-4 rounded-br-lg">A dual-core, quad-core, or octa-core CPU (e.g., Intel Core i7 with 4 cores).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-3">(c) Explain the following terms:</h4>
+
+                <h5 class="text-lg sm:text-xl font-medium text-gray-700 mb-2">(i) Cache Memory:</h5>
+                <ul class="list-disc list-inside ml-4 text-base mb-4 space-y-2">
+                    <li>Explanation: A small, extremely fast memory component (typically SRAM) located very close to the CPU (often on the same chip). Its purpose is to store copies of frequently accessed data and instructions from slower main memory. It operates on the principle of locality of reference.</li>
+                    <li>How it works: When the CPU needs data, it first checks the cache. If the data is found (a "cache hit"), it's retrieved quickly. If not found (a "cache miss"), the data is fetched from the slower main memory, brought into the cache (for future faster access), and then supplied to the CPU.</li>
+                    <li>Benefit: Dramatically reduces the average memory access time, bridging the speed gap between the fast CPU and slower main memory.</li>
+                </ul>
+
+                <h5 class="text-lg sm:text-xl font-medium text-gray-700 mb-2">(ii) Speculation:</h5>
+                <ul class="list-disc list-inside ml-4 text-base mb-4 space-y-2">
+                    <li>Explanation: A processor optimization technique where instructions are executed before it is certain that their results will actually be needed or committed to the architectural state. This is often used in conjunction with branch prediction.</li>
+                    <li>How it works: If a branch is predicted to be taken, the processor will speculatively fetch and execute instructions along that predicted path. The results of these speculative instructions are held in temporary buffers (e.g., reorder buffer) and are only made permanent if the prediction turns out to be correct.</li>
+                    <li>Benefit: Can significantly reduce the latency associated with control hazards (branches) by doing useful work while waiting for the actual branch outcome. If the prediction is incorrect, the speculatively executed instructions are simply discarded ("flushed").</li>
+                </ul>
+
+                <h5 class="text-lg sm:text-xl font-medium text-gray-700 mb-2">(iii) Branch Target Buffer (BTB):</h5>
+                <ul class="list-disc list-inside ml-4 text-base mb-4 space-y-2">
+                    <li>Explanation: A special cache in the CPU that stores the target addresses of recently executed branch instructions. Its primary role is to provide the target address of a branch early in the pipeline, typically during the Instruction Fetch (IF) stage.</li>
+                    <li>How it works: When a branch instruction is fetched, its address is looked up in the BTB. If a hit occurs, the BTB supplies the predicted target address, allowing the instruction fetch unit to immediately start fetching from that address, even before the branch instruction is fully decoded or its condition is evaluated.</li>
+                    <li>Benefit: Crucial for enabling continuous instruction fetching in pipelined processors, especially after taken branches, by providing the next fetch address without stalling the pipeline.</li>
+                </ul>
+
+                <h5 class="text-lg sm:text-xl font-medium text-gray-700 mb-2">(iv) Out-Of-Order Execution (OOO):</h5>
+                <ul class="list-disc list-inside ml-4 text-base mb-4 space-y-2">
+                    <li>Explanation: An advanced CPU technique where instructions are executed in an order different from their original program sequence, provided that their true data dependencies are met. This maximizes the utilization of execution units and exploits Instruction-Level Parallelism (ILP).</li>
+                    <li>How it works: Instructions are fetched in program order but are then buffered in a "reservation station" or "instruction window." When an instruction's operands become available (i.e., its inputs are ready) and an execution unit is free, it can execute, regardless of whether prior instructions have finished. The results are stored temporarily and committed to the architectural state (registers, memory) in original program order to maintain precise exceptions.</li>
+                    <li>Benefit: Improves performance by allowing the processor to bypass stalled instructions and execute independent instructions, thereby hiding latencies from operations like memory accesses or long-latency arithmetic operations.</li>
+                </ul>
+
+                <h5 class="text-lg sm:text-xl font-medium text-gray-700 mb-2">(v) Virtual Memory:</h5>
+                <ul class="list-disc list-inside ml-4 text-base mb-4 space-y-2">
+                    <li>Explanation: A memory management technique that provides an application with an illusion of a contiguous and larger memory address space than is physically available in the main memory. It decouples the logical memory address space of a process from the physical memory address space of the computer.</li>
+                    <li>How it works: The operating system and hardware (MMU) divide the virtual address space into fixed-size units called pages and physical memory into frames. A page table maps virtual pages to physical frames. If a required page is not in RAM, it's stored on disk and loaded on demand (a page fault occurs).</li>
+                    <li>Benefits:
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>Memory Protection: Isolates processes' memory spaces from each other and from the OS.</li>
+                            <li>Memory Sharing: Allows multiple processes to share common code/data.</li>
+                            <li>Larger Address Space: Programs can use more memory than physically installed.</li>
+                            <li>Simpler Programming: Programmers don't need to worry about physical memory addresses.</li>
+                            <li>Efficient Multiprogramming: Allows many processes to run concurrently by swapping pages between RAM and disk.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </article>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="text-3xl sm:text-4xl font-bold text-blue-600 mb-6 pb-2 border-b border-blue-300">
+                Section B: Operating Systems
+            </h2>
+
+            <article class="mb-8 p-4 bg-gray-50 rounded-lg shadow-sm">
+                <h3 class="text-2xl sm:text-3xl font-semibold text-gray-800 mb-4">
+                    Question 6: Operating System Fundamentals
+                </h3>
+                <p class="mb-4 text-lg">
+                    Question: (a) What inconveniences can a user face while interacting with a computer system, which is without an operating system? (b) How does the operating system manage the memory? Discuss. (c) With an appropriate diagram, explain the batch operating system. (d) What does it mean for an operating system to be an open-source? State one (1) open-source operating system. (e) Briefly explain three (3) components of the open-source operating system architecture stated in question 6(d).
+                </p>
+
+                <h4 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-3">(a) What inconveniences can a user face while interacting with a computer system, which is without an operating system?</h4>
+                <p class="mb-4">
+                    A computer system without an operating system (OS) would be practically unusable for most users, presenting immense inconveniences:
+                </p>
+                <ol class="list-decimal list-inside ml-4 text-base mb-4 space-y-2">
+                    <li>No User Interface (UI): There would be no graphical desktop, icons, menus, or even a simple command line. Users would have to interact directly with hardware via complex machine code or by toggling switches on the machine.</li>
+                    <li>Manual Hardware Management: Every interaction with peripherals (keyboard, mouse, printer, display, disk drive, network card) would require the user or their program to write and execute low-level, specific hardware commands. There would be no drivers.</li>
+                    <li>No File System: Data would be stored as raw bits on storage devices. There would be no concept of files, folders, or easy ways to save, retrieve, or organize information.</li>
+                    <li>No Program Loading/Execution: Users could not simply "run" a program. Each program would need to be manually loaded into specific memory locations, and it would need to contain all the necessary code for basic I/O and hardware interaction.</li>
+                    <li>No Memory Management: Programs would directly access physical memory. This could lead to programs overwriting each other's data or the system's critical areas, causing crashes and instability. No memory protection.</li>
+                    <li>No Multitasking: Only one program could run at a time, monopolizing all system resources until its completion. Switching between tasks would be impossible.</li>
+                    <li>No Resource Sharing: If multiple users wanted to use the computer, they would have to take turns, and their programs might interfere with each other without OS arbitration.</li>
+                    <li>Lack of Error Handling: Hardware failures or program errors would likely cause the entire system to halt or crash without any graceful recovery mechanisms.</li>
+                    <li>Difficult Software Development: Developing applications would be incredibly complex and time-consuming, as every programmer would need deep knowledge of the underlying hardware for basic functionalities.</li>
+                </ol>
+                <p class="mb-4">
+                    In essence, the OS provides the fundamental layers of abstraction, resource management, and user interaction that make computers accessible and useful.
+                </p>
+
+                <h4 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-3">(b) How does the operating system manage the memory? Discuss.</h4>
+                <p class="mb-4">
+                    Operating systems play a crucial role in memory management to ensure efficient, secure, and flexible use of the computer's main memory (RAM). Key ways the OS manages memory include:
+                </p>
+                <ol class="list-decimal list-inside ml-4 text-base mb-4 space-y-2">
+                    <li>Memory Allocation and Deallocation:
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>Tracking Free/Allocated Memory: The OS maintains data structures (like free lists, bitmaps, or allocation tables) to keep track of which parts of memory are currently in use by processes and which parts are available.</li>
+                            <li>Allocation Schemes:
+                                <ul class="list-circle list-inside ml-4 space-y-1">
+                                    <li>Contiguous Allocation: Historically, processes were loaded into a single, contiguous block of memory. This can lead to external fragmentation (free memory fragmented into small, unusable pieces).</li>
+                                    <li>Non-Contiguous Allocation (Paging & Segmentation): Modern OSes primarily use non-contiguous schemes:
+                                        <ul class="list-square list-inside ml-4 space-y-1">
+                                            <li>Paging: Divides a program's logical address space into fixed-size "pages" and physical memory into fixed-size "frames." A page table maps pages to frames, allowing a program to occupy non-contiguous physical memory. This eliminates external fragmentation but introduces internal fragmentation (unused space within a frame).</li>
+                                            <li>Segmentation: Divides a program into logical units (segments like code, data, stack) of varying sizes. These segments can be loaded non-contiguously.</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>Virtual Memory:
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>The OS creates a virtual address space for each process, which is often much larger than the physical RAM available.</li>
+                            <li>It uses hardware (the Memory Management Unit - MMU) to translate virtual addresses (generated by the CPU) into physical addresses (in RAM).</li>
+                            <li>Swapping/Paging to Disk: When physical memory is full, the OS can move (swap out) less frequently used pages/segments from RAM to secondary storage (swap space on disk). When these are needed, they are swapped back in (page fault). This allows more processes to run than physically fit into RAM.</li>
+                            <li>Demand Paging: Pages are loaded into RAM only when they are actually accessed, improving program startup times and allowing larger programs to run.</li>
+                        </ul>
+                    </li>
+                    <li>Memory Protection:
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>The OS uses the MMU and page table entries (which include permission bits like read/write/execute) to ensure that one process cannot access or modify the memory space of another process or the OS kernel itself. This prevents bugs or malicious code in one program from crashing the entire system.</li>
+                            <li>Different privilege levels (e.g., user mode vs. kernel mode) also restrict access to certain memory regions.</li>
+                        </ul>
+                    </li>
+                    <li>Memory Sharing:
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>The OS facilitates sharing of code (e.g., shared libraries) and data between multiple processes by mapping the same physical memory frames into the virtual address spaces of different processes. This saves memory and enables efficient inter-process communication.</li>
+                        </ul>
+                    </li>
+                    <li>Page Replacement Algorithms:
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>When a page fault occurs and all physical frames are occupied, the OS uses algorithms (e.g., FIFO, LRU, Optimal, Clock) to decide which page to evict from RAM to make space for the incoming page.</li>
+                        </ul>
+                    </li>
+                </ol>
+                <p class="mb-4">
+                    By managing memory effectively, the OS provides stability, security, efficient resource utilization, and an abstraction that simplifies programming.
+                </p>
+
+                <h4 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-3">(c) With an appropriate diagram, explain the batch operating system.</h4>
+                <p class="mb-4">
+                    A Batch Operating System is an early type of operating system designed for efficient processing of similar jobs without direct user interaction during execution. The main goal was to maximize CPU utilization.
+                </p>
+                <h5 class="text-lg sm:text-xl font-medium text-gray-700 mb-2">Characteristics:</h5>
+                <ul class="list-disc list-inside ml-4 text-base mb-2">
+                    <li>No Direct Interaction: Users submit jobs offline (e.g., on punch cards or magnetic tapes) to a computer operator.</li>
+                    <li>Job Batching: The operator collects similar jobs into "batches" (e.g., all Fortran programs, all payroll calculations).</li>
+                    <li>Sequential Execution: The OS executes jobs in a batch one after another, typically in a First-Come, First-Served (FCFS) manner. Once a job starts, it runs to completion.</li>
+                    <li>Monoprogramming: Usually, only one job resided in memory and executed at a time.</li>
+                    <li>Lack of Interactivity: Unsuitable for interactive applications where users need immediate responses.</li>
+                </ul>
+                <h5 class="text-lg sm:text-xl font-medium text-gray-700 mb-2">Working Mechanism:</h5>
+                <ol class="list-decimal list-inside ml-4 text-base mb-2">
+                    <li>Job Preparation: Programmers write programs and prepare data, often along with control instructions (Job Control Language - JCL) on physical media.</li>
+                    <li>Job Submission: Users hand over their physical job deck to a computer operator.</li>
+                    <li>Batch Creation: The operator groups similar jobs together to form a batch. This reduces setup time between jobs.</li>
+                    <li>Input to System: The operator loads the batch into the computer using an input device (e.g., card reader).</li>
+                    <li>Execution: The batch OS reads the first job, loads it into memory, and executes it. Upon completion, the next job in the batch is loaded and executed.</li>
+                    <li>Output: The results of each job are typically printed or spooled to a tape drive, which the operator then returns to the user.</li>
+                </ol>
+                <h5 class="text-lg sm:text-xl font-medium text-gray-700 mb-2">Conceptual Diagram:</h5>
+                <pre class="bg-gray-100 p-4 rounded-lg text-sm mb-4">
++------------------+          +-----------------------+
+|  User (Programmer) |          | Computer Operator     |
+| (Prepares Jobs   |          | (Collects and batches |
+|  on Cards/Tape)  |<---------|  jobs)                |
++--------+---------+          +-----------+-----------+
+         |                                |
+         | (Submits Jobs)                 | (Loads Batch into Input Device)
+         V                                V
++-------------------------------------------------------------+
+|                     Computer System with Batch OS           |
+|                                                             |
+|  +-----------------+          +---------------------+       |
+|  |  Input Device   |          |  Job Queue (Batch)  |       |
+|  | (Card Reader,   |--------->|                     |       |
+|  |  Tape Drive)    |          | Job 1 (Fortran)     |       |
+|  +-----------------+          | Job 2 (COBOL)       |       |
+|                               | Job 3 (Assembly)    |       |
+|                               +---------------------+       |
+|           +-----------------+          +-----------------+  |
+|           |                 |<---------|  Processor      |  |
+|           |  Main Memory    |          |  (CPU)          |  |
+|           |  (Holds one job |--------->| (Executes one   |  |
+|           |   at a time)    |          |  job to completion)|
+|           +-----------------+          +-----------------+  |
+|                   ^                                          |
+|                   | (Loads Program/Data)                     |
+|                   |                                          |
+|  +-----------------+          +---------------------+       |
+|  |  Output Device  |          |  Output Spool       |       |
+|  | (Printer, Tape) |<---------|  (Results for each   |       |
+|  +-----------------+          |   job)              |       |
++-------------------------------------------------------------+
+         ^                               ^
+         |                               | (Retrieves Output)
+         |                               |
++--------+---------+          +-----------+-----------+
+|  User (Programmer) |          | Computer Operator     |
+| (Collects Results)|          | (Delivers Output)     |
++------------------+          +-----------------------+
+                </pre>
+
+                <h4 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-3">(d) What does it mean for an operating system to be an open-source? State one (1) open-source operating system.</h4>
+                <p class="mb-4">
+                    An operating system being open-source means that its source code is made publicly available under a license that grants users the rights to study, change, and distribute the software to anyone and for any purpose.
+                </p>
+                <h5 class="text-lg sm:text-xl font-medium text-gray-700 mb-2">Key implications of open-source software include:</h5>
+                <ul class="list-disc list-inside ml-4 text-base mb-4 space-y-1">
+                    <li>Transparency: Anyone can inspect the code to understand its functionality, check for security vulnerabilities, or verify its behavior.</li>
+                    <li>Freedom to Use and Distribute: Users can run the software for any purpose and distribute copies of the original or modified versions.</li>
+                    <li>Freedom to Modify: Developers and users can modify the source code to fix bugs, add new features, customize it, or adapt it to new hardware.</li>
+                    <li>Community Collaboration: Development often thrives on community contributions, leading to rapid innovation and robust software.</li>
+                    <li>Cost-Effective: Typically, open-source software itself is free of charge, though support services or derived commercial products might have costs.</li>
+                </ul>
+                <h5 class="text-lg sm:text-xl font-medium text-gray-700 mb-2">One (1) open-source operating system:</h5>
+                <ul class="list-disc list-inside ml-4 text-base mb-4">
+                    <li>Linux (e.g., Ubuntu, Fedora, Debian, Android (based on Linux kernel))</li>
+                </ul>
+
+                <h4 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-3">(e) Briefly explain three (3) components of the open-source operating system architecture stated in question 6(d).</h4>
+                <p class="mb-4">
+                    Using Linux as an example of an open-source operating system, here are three common architectural components:
+                </p>
+                <ol class="list-decimal list-inside ml-4 text-base mb-4 space-y-2">
+                    <li>Kernel:
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>Explanation: The kernel is the core of the operating system. It provides the fundamental interface between the hardware and the applications. It manages the system's most critical resources: CPU (scheduling processes, handling context switches), memory (virtual memory, paging), and hardware devices (through device drivers). The Linux kernel is largely monolithic, meaning core OS services run in a single, privileged address space, providing high performance.</li>
+                            <li>Role: The kernel's primary functions include process management (creating, scheduling, terminating processes), memory management, device management (managing I/O operations), and system call handling (providing services to user applications).</li>
+                        </ul>
+                    </li>
+                    <li>Shell:
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>Explanation: The shell is a command-line interpreter that serves as the primary interface for users to interact with the Linux operating system. It reads commands typed by the user (e.g., `ls`, `cd`, `grep`), interprets them, and then executes the corresponding programs or operating system functions. Popular shells include Bash (Bourne Again SHell), Zsh, and Ksh.</li>
+                            <li>Role: It provides an environment for executing commands, navigating the file system, managing processes, and scripting automated tasks. While graphical user interfaces (GUIs) are common, the shell remains a powerful and essential tool for system administration, development, and automation in Linux environments.</li>
+                        </ul>
+                    </li>
+                    <li>File System:
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>Explanation: The file system in Linux is the method and data structure used by the operating system to organize and manage files on storage devices (like hard drives, SSDs, USB drives). It provides a hierarchical structure (like a tree, starting from the root `/`) for storing and accessing data. Common Linux file systems include Ext4, XFS and Btrfs.</li>
+                            <li>Role: It's responsible for managing disk space, handling the creation, deletion, reading, and writing of files. It also enforces file permissions and ownership, ensuring data security and integrity. The file system abstracts the physical storage details, presenting a logical and easy-to-use view of data to users and applications.</li>
+                        </ul>
+                    </li>
+                </ol>
+            </article>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="text-3xl sm:text-4xl font-bold text-blue-600 mb-6 pb-2 border-b border-blue-300">
+                Section C: Memory Management & Scheduling
+            </h2>
+
+            <article class="mb-8 p-4 bg-gray-50 rounded-lg shadow-sm">
+                <h3 class="text-2xl sm:text-3xl font-semibold text-gray-800 mb-4">
+                    Question 8 (a): FCFS Scheduling (from IMG-20250608-WA0297.jpg)
+                </h3>
+                <p class="mb-4 text-lg">
+                    Question: A process scheduler schedules different processes to the CPU based on "first-come-first-serve" scheduling algorithm. The processes are J1, J2, J3, J4, and J5 with arrival time of 0, 1, 2, 3 and 4 respectively. The burst time for each process J1, J2, J3, J4, and J5 are 5, 8, 6, 4 and 3 respectively. Tabulate the results and show the Gantt chart of the processes. Also, compute the average turn-around-time, average waiting time, the throughput and the response time considering it as a non-preemptive algorithm. What is difference between a preemptive and non-preemptive algorithm?
+                </p>
+                <p class="mb-2">Processes Data:</p>
+                <div class="overflow-x-auto mb-4">
+                    <table class="min-w-full bg-white rounded-lg shadow-md">
+                        <thead>
+                            <tr>
+                                <th class="py-3 px-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider rounded-tl-lg">Process</th>
+                                <th class="py-3 px-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Arrival Time</th>
+                                <th class="py-3 px-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider rounded-tr-lg">Burst Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>J1</td><td>0</td><td>5</td></tr>
+                            <tr><td>J2</td><td>1</td><td>8</td></tr>
+                            <tr><td>J3</td><td>2</td><td>6</td></tr>
+                            <tr><td>J4</td><td>3</td><td>4</td></tr>
+                            <tr><td>J5</td><td>4</td><td>3</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-3">Algorithm: First-Come, First-Served (FCFS), Non-Preemptive</h4>
+                <h5 class="text-lg sm:text-xl font-medium text-gray-700 mb-2">Gantt Chart:</h5>
+                <p class="mb-2">Since it's FCFS and non-preemptive, processes run in the order of their arrival and once started, they run to completion without interruption.</p>
+                <pre class="bg-gray-100 p-4 rounded-lg text-sm mb-4">
+0   5   13   19   23   26
+| J1 | J2 | J3 | J4 | J5 |
+                </pre>
+                <ul class="list-disc list-inside ml-4 text-base mb-4 space-y-1">
+                    <li>J1: Arrives at 0, starts at 0. Completes at $0 + 5 = 5$.</li>
+                    <li>J2: Arrives at 1, waits until J1 finishes. Starts at 5. Completes at $5 + 8 = 13$.</li>
+                    <li>J3: Arrives at 2, waits. Starts at 13. Completes at $13 + 6 = 19$.</li>
+                    <li>J4: Arrives at 3, waits. Starts at 19. Completes at $19 + 4 = 23$.</li>
+                    <li>J5: Arrives at 4, waits. Starts at 23. Completes at $23 + 3 = 26$.</li>
+                </ul>
+
+                <h5 class="text-lg sm:text-xl font-medium text-gray-700 mb-2">Tabulate the Results:</h5>
+                <div class="overflow-x-auto mb-4">
+                    <table class="min-w-full bg-white rounded-lg shadow-md">
+                        <thead>
+                            <tr>
+                                <th class="py-3 px-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider rounded-tl-lg">Process</th>
+                                <th class="py-3 px-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Arrival Time (AT)</th>
+                                <th class="py-3 px-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Burst Time (BT)</th>
+                                <th class="py-3 px-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Start Time</th>
+                                <th class="py-3 px-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Completion Time (CT)</th>
+                                <th class="py-3 px-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Turn-Around Time (TAT = CT - AT)</th>
+                                <th class="py-3 px-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider rounded-tr-lg">Waiting Time (WT = Start Time - AT)</th>
+                                <th class="py-3 px-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider rounded-tr-lg">Response Time (RT = Start Time - AT)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>J1</td><td>0</td><td>5</td><td>0</td><td>5</td><td>5</td><td>0</td><td>0</td></tr>
+                            <tr><td>J2</td><td>1</td><td>8</td><td>5</td><td>13</td><td>12</td><td>4</td><td>4</td></tr>
+                            <tr><td>J3</td><td>2</td><td>6</td><td>13</td><td>19</td><td>17</td><td>11</td><td>11</td></tr>
+                            <tr><td>J4</td><td>3</td><td>4</td><td>19</td><td>23</td><td>20</td><td>16</td><td>16</td></tr>
+                            <tr><td>J5</td><td>4</td><td>3</td><td>23</td><td>26</td><td>22</td><td>19</td><td>19</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h5 class="text-lg sm:text-xl font-medium text-gray-700 mb-2">Calculations:</h5>
+                <ul class="list-disc list-inside ml-4 text-base mb-4 space-y-1">
+                    <li>Average Turn-Around Time (ATAT):
+                        <br>$(5 + 12 + 17 + 20 + 22) / 5 = 76 / 5 = \textbf{15.2 ms}$
+                    </li>
+                    <li>Average Waiting Time (AWT):
+                        <br>$(0 + 4 + 11 + 16 + 19) / 5 = 50 / 5 = \textbf{10 ms}$
+                    </li>
+                    <li>Throughput:
+                        <br>Total processes completed / Total time taken = $5 \text{ processes} / 26 \text{ ms} = \textbf{0.192 processes/ms}$ (approx.)
+                    </li>
+                    <li>Average Response Time (ART):
+                        <br>$(0 + 4 + 11 + 16 + 19) / 5 = 50 / 5 = \textbf{10 ms}$
+                        <br>
+                        <blockquote>
+                            For non-preemptive FCFS, Response Time is equal to Waiting Time for each process, hence the average is also the same.
+                        </blockquote>
+                    </li>
+                </ul>
+
+                <h4 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-3">Difference between Preemptive and Non-Preemptive Algorithm:</h4>
+                <ul class="list-disc list-inside ml-4 text-base mb-4 space-y-2">
+                    <li>Non-Preemptive Algorithm:
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>Once a process is assigned the CPU, it executes without interruption until it either completes its CPU burst or voluntarily relinquishes the CPU (e.g., for an I/O operation).</li>
+                            <li>The scheduler cannot forcefully take the CPU away from a running process.</li>
+                            <li>Examples: First-Come, First-Served (FCFS), Non-Preemptive Shortest Job First (SJF).</li>
+                        </ul>
+                    </li>
+                    <li>Preemptive Algorithm:
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>The CPU can be taken away from a running process at any time, typically by the operating system's scheduler due to an event like a timer interrupt, the arrival of a higher-priority process, or an I/O completion.</li>
+                            <li>The process can be interrupted and its state saved, allowing another process to run, and later resumed.</li>
+                            <li>Examples: Round Robin, Preemptive Shortest Job First (SJF) (also known as Shortest Remaining Time First - SRTF), Preemptive Priority Scheduling.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </article>
+
+            <article class="mb-8 p-4 bg-gray-50 rounded-lg shadow-sm">
+                <h3 class="text-2xl sm:text-3xl font-semibold text-gray-800 mb-4">
+                    Question 8 (b): Memory Allocation Table (Best Fit vs. First Fit)
+                </h3>
+                <p class="mb-4 text-lg">
+                    Question: A computer has 2050KB of main memory. The process arrives and finishes in the following sequences:
+                    <ul class="list-disc list-inside ml-4 text-base my-2">
+                        <li>Process 1 requires 300KB arrives</li>
+                        <li>Process 2 requires 200KB arrives</li>
+                        <li>Process 3 requires 350KB arrives</li>
+                        <li>Process 4 requires 150KB arrives</li>
+                        <li>Process 2 finishes</li>
+                        <li>Process 5 requires 120KB arrives</li>
+                        <li>Process 6 requires 80KB arrives</li>
+                    </ul>
+                    Draw the memory allocation table using the "best-fit" and "first-fit" algorithm and state which of the algorithm performs better for the sequence.
+                </p>
+                <p class="mb-2">Main Memory Size = 2050KB</p>
+                <p class="mb-4">Initial Memory State: `[ 2050K (Free) ]`</p>
+
+                <h4 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-3">Memory Allocation Table (Step-by-step):</h4>
+
+                <h5 class="text-lg sm:text-xl font-medium text-gray-700 mb-2">Best Fit Algorithm:</h5>
+                <p class="mb-2">Allocates to the *smallest available memory hole* that is large enough to hold the process.</p>
+                <div class="overflow-x-auto mb-4">
+                    <table class="min-w-full bg-white rounded-lg shadow-md">
+                        <thead>
+                            <tr>
+                                <th class="py-3 px-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider rounded-tl-lg">Step</th>
+                                <th class="py-3 px-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Event</th>
+                                <th class="py-3 px-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Memory State (Best Fit)</th>
+                                <th class="py-3 px-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider rounded-tr-lg">Free Space (Total)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Init</td><td></td><td>`[ 2050K (F) ]`</td><td>2050K</td></tr>
+                            <tr><td>1</td><td>P1 (300K) arrives</td><td>`[ P1 (300K) | 1750K (F) ]`</td><td>1750K</td></tr>
+                            <tr><td>2</td><td>P2 (200K) arrives</td><td>`[ P1 (300K) | P2 (200K) | 1550K (F) ]`</td><td>1550K</td></tr>
+                            <tr><td>3</td><td>P3 (350K) arrives</td><td>`[ P1 (300K) | P2 (200K) | P3 (350K) | 1200K (F) ]`</td><td>1200K</td></tr>
+                            <tr><td>4</td><td>P4 (150K) arrives</td><td>`[ P1 (300K) | P2 (200K) | P3 (350K) | P4 (150K) | 1050K (F) ]`</td><td>1050K</td></tr>
+                            <tr><td>5</td><td>P2 (200K) finishes</td><td>`[ P1 (300K) | 200K (F) | P3 (350K) | P4 (150K) | 1050K (F) ]`</td><td>1250K</td></tr>
+                            <tr><td>6</td><td>P5 (120K) arrives</td><td>`[ P1 (300K) | P5 (120K) | 80K (F) | P3 (350K) | P4 (150K) | 1050K (F) ]`</td><td>1130K</td></tr>
+                            <tr><td>7</td><td>P6 (80K) arrives</td><td>`[ P1 (300K) | P5 (120K) | P6 (80K) | P3 (350K) | P4 (150K) | 1050K (F) ]`</td><td>1050K</td></tr>
+                            <tr class="font-semibold bg-blue-50">
+                                <td>Final State</td>
+                                <td>All processes allocated</td>
+                                <td>Total Free: 1050KB (1 large block)</td>
+                                <td>1050K</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h5 class="text-lg sm:text-xl font-medium text-gray-700 mb-2">First Fit Algorithm:</h5>
+                <p class="mb-2">Allocates to the *first available memory hole* (starting from the beginning) that is large enough.</p>
+                <div class="overflow-x-auto mb-4">
+                    <table class="min-w-full bg-white rounded-lg shadow-md">
+                        <thead>
+                            <tr>
+                                <th class="py-3 px-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider rounded-tl-lg">Step</th>
+                                <th class="py-3 px-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Event</th>
+                                <th class="py-3 px-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Memory State (First Fit)</th>
+                                <th class="py-3 px-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider rounded-tr-lg">Free Space (Total)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Init</td><td></td><td>`[ 2050K (F) ]`</td><td>2050K</td></tr>
+                            <tr><td>1</td><td>P1 (300K) arrives</td><td>`[ P1 (300K) | 1750K (F) ]`</td><td>1750K</td></tr>
+                            <tr><td>2</td><td>P2 (200K) arrives</td><td>`[ P1 (300K) | P2 (200K) | 1550K (F) ]`</td><td>1550K</td></tr>
+                            <tr><td>3</td><td>P3 (350K) arrives</td><td>`[ P1 (300K) | P2 (200K) | P3 (350K) | 1200K (F) ]`</td><td>1200K</td></tr>
+                            <tr><td>4</td><td>P4 (150K) arrives</td><td>`[ P1 (300K) | P2 (200K) | P3 (350K) | P4 (150K) | 1050K (F) ]`</td><td>1050K</td></tr>
+                            <tr><td>5</td><td>P2 (200K) finishes</td><td>`[ P1 (300K) | 200K (F) | P3 (350K) | P4 (150K) | 1050K (F) ]`</td><td>1250K</td></tr>
+                            <tr><td>6</td><td>P5 (120K) arrives</td><td>`[ P1 (300K) | P5 (120K) | 80K (F) | P3 (350K) | P4 (150K) | 1050K (F) ]`</td><td>1130K</td></tr>
+                            <tr><td>7</td><td>P6 (80K) arrives</td><td>`[ P1 (300K) | P5 (120K) | P6 (80K) | P3 (350K) | P4 (150K) | 1050K (F) ]`</td><td>1050K</td></tr>
+                            <tr class="font-semibold bg-blue-50">
+                                <td>Final State</td>
+                                <td>All processes allocated</td>
+                                <td>Total Free: 1050KB (1 large block)</td>
+                                <td>1050K</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-3">Which algorithm performs better for this sequence?</h4>
+                <p class="mb-4">
+                    For this specific sequence, both Best Fit and First Fit algorithms perform equally well.
+                </p>
+                <p class="mb-4">
+                    Reasoning:
+                    <ul class="list-disc list-inside ml-4 text-base space-y-1">
+                        <li>Both algorithms successfully allocated all the processes (P1 through P6).</li>
+                        <li>At the end of the sequence, both algorithms resulted in the same total amount of free memory (1050KB) and the same memory block configuration (one large contiguous free block).</li>
+                        <li>The sequence of allocations and deallocations did not create a scenario where one algorithm's fragmentation characteristics were significantly better or worse than the other's, as both found suitable holes for all incoming processes and maintained a large free block for the remaining space.</li>
+                    </ul>
+                </p>
+            </article>
+        </section>
+
+        <footer class="text-center text-gray-500 text-sm mt-12 pt-6 border-t border-gray-200">
+            <p>&copy; 2025 Joseph Godsown Anointed. All rights reserved.</p>
+            <p>University of Benin, Edo State, Nigeria.</p>
+        </footer>
+    </div>
+</body>
+</html>
